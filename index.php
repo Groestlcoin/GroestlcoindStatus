@@ -14,7 +14,7 @@ spl_autoload_register(function($class){
 		require($class .'.php');
 });
 
-class BitcoindStatus extends TooBasic\Controller
+class GroestlcoindStatus extends TooBasic\Controller
 {
 	protected $_config;
 	public static $client;
@@ -51,15 +51,6 @@ class BitcoindStatus extends TooBasic\Controller
 		self::$tpl->info->network = self::$client->getnetworkinfo();
 		self::$tpl->info->mempool = self::$client->getmempoolinfo();
 
-		$curl = new TooBasic\Rpc\Transport\Curl;
-		$network = json_decode($curl->request('GET', 'https://bitnodes.21.co/api/v1/snapshots/'));
-		self::$tpl->blockCount = $network->results[0]->latest_height;
-
-		if (isset($this->_config['publicHost']))
-			self::$tpl->onlineInfo = json_decode($curl->request('GET', 'https://bitnodes.21.co/api/v1/nodes/'.strtr($this->_config['publicHost'].'/', ':', '-')));
-		else
-			self::$tpl->onlineInfo = (object)['status' => '<i>unknown</i>'];
-
 		self::$tpl->peers = self::$client->getpeerinfo();
 		usort(self::$tpl->peers, function($a, $b){
 			return intval(100000*($a->minping - $b->minping));
@@ -81,4 +72,4 @@ class BitcoindStatus extends TooBasic\Controller
 	}
 }
 
-BitcoindStatus::dispatch('/'. $_SERVER['QUERY_STRING']);
+GroestlcoindStatus::dispatch('/'. $_SERVER['QUERY_STRING']);
